@@ -60,7 +60,8 @@ fastapi run main.py
 ```
 The application will start running at `http://localhost:8000`.
 
-This API can be dockerized for deployment, but it is also possible to run the API from a Google Colab using the NGROK service. The Jupyter Notebook is included in the repository.
+This API can be dockerized for deployment, but it is also possible to run the API from a Google Colab using the NGROK service. The Jupyter Notebook is included in the repository. [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/3choff/FastWhisperAPI/blob/main/FastWhisperAPI_notebook.ipynb)
+
 
 ## Parameters
 
