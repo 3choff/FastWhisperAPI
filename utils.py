@@ -83,7 +83,7 @@ def validate_parameters(files, language, model_size, vad_filter, min_silence_dur
         logger.warning(f"Invalid language: {language}")
         raise HTTPException(status_code=400, detail={
             "error": {
-                "message": f"Invalid language. Supported languages are: {', '.join(SUPPORTED_LANGUAGES)}",
+                "message": f"Invalid language {language}. Language parameter must be specified in ISO-639-1 format.",
                 "type": "invalid_request_error",
                 "param": "language",
                 "code": 400

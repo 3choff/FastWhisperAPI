@@ -65,14 +65,14 @@ This API can be dockerized for deployment, but it is also possible to run the AP
 
 ## Parameters
 
-- `files`: A list of audio files to transcribe. This is a required parameter.
-- `model_size`: The size of the model to use for transcription. This is an optional parameter. The options are 'large', 'medium', 'small', 'base', 'tiny'. Default is 'base'.
-- `language`: This parameter specifies the language of the audio files. It is optional, with accepted values being lowercase ISO language code (e.g., 'en' for English). If not provided, the system will automatically detect the language.
+- `file`: A list of audio files to transcribe. This is a required parameter.
+- `model`: The size of the model to use for transcription. This is an optional parameter. The options are 'large', 'medium', 'small', 'base', 'tiny'. Default is 'base'.
+- `language`: This parameter specifies the language of the audio files. It is optional, with accepted values being lowercase ISO-639-1 format (e.g., 'en' for English). If not provided, the system will automatically detect the language.
 - `initial_prompt`: This optional parameter provides an initial prompt to guide the model's transcription process. It can be used to pass a dictionary of the correct spellings of words and to provide context for better understanding speech, thus maintaining a consistent writing style.
 - `vad_filter`: Whether to apply a voice activity detection filter. This is an optional parameter. Default is False.
 - `min_silence_duration_ms`: The minimum duration of silence to be considered as a pause. This is an optional parameter. Default is 1000.
-- `response_format`: The format of the response. This is an optional parameter. The options are 'text', 'json'. Default is 'text'.
-- `timestamp_granularities`: The granularity of the timestamps. This is an optional parameter. The options are 'segment', 'word'. Default is 'segment'.
+- `response_format`: The format of the response. This is an optional parameter. The options are 'text', 'verbose_json'. Default is 'text'.
+- `timestamp_granularities`: The granularity of the timestamps. This is an optional parameter. The options are 'segment', 'word'. Default is 'segment'. This is a string and not an array like the OpenAI model, and the timestamps will be returned only if the response_format is set to verbose_json.
 
 ### Example curl request
 
@@ -82,9 +82,9 @@ You can use the following `curl` command to send a POST request to the `/v1/tran
 curl -X POST "http://localhost:8000/v1/transcriptions" \
 -H  "accept: application/json" \
 -H  "Content-Type: multipart/form-data" \
--F "files=@audio1.wav;type=audio/wav" \
--F "files=@audio2.wav;type=audio/wav" \
--F "model_size=base" \
+-F "file=@audio1.wav;type=audio/wav" \
+-F "file=@audio2.wav;type=audio/wav" \
+-F "model=base" \
 -F "language=en" \
 -F "initial_prompt=RoBERTa, Mixtral, Claude 3, Command R+, LLama 3." \
 -F "vad_filter=False" \

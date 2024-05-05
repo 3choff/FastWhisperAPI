@@ -7,6 +7,7 @@ from fastapi import FastAPI, UploadFile, File, HTTPException, Request, Form, Dep
 from fastapi.security import HTTPAuthorizationCredentials
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, RedirectResponse, HTMLResponse
+from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 
 # Constants
@@ -21,6 +22,16 @@ from logging_config import get_logger
 logger = get_logger()
 
 app = FastAPI()
+
+origins = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Helper functions
 from utils import authenticate_user
@@ -46,19 +57,19 @@ def home():
                 <p>Description: API designed to transcribe audio files leveraging the Faster Whisper library and FastAPI framework.</p>
                 <h4>Parameters:</h4>
                 <ul>
-                    <li>files: A list of audio files to transcribe. This is a required parameter.</li>
-                    <li>model_size: The size of the model to use for transcription. This is an optional parameter. The options are 'large', 'medium', 'small', 'base', 'tiny'. Default is 'base'.</li>
-                    <li>language: This parameter specifies the language of the audio files. It is optional, with accepted values being lowercase ISO language code (e.g., 'en' for English). If not provided, the system will automatically detect the language.</li>
+                    <li>file: A list of audio files to transcribe. This is a required parameter.</li>
+                    <li>model: The size of the model to use for transcription. This is an optional parameter. The options are 'large', 'medium', 'small', 'base', 'tiny'. Default is 'base'.</li>
+                    <li>language: This parameter specifies the language of the audio files. It is optional, with accepted values being lowercase ISO-639-1 format. (e.g., 'en' for English). If not provided, the system will automatically detect the language.</li>
                     <li>initial_prompt: This optional parameter provides an initial prompt to guide the model's transcription process. It can be used to pass a dictionary of the correct spellings of words and to provide context for better understanding speech, thus maintaining a consistent writing style.</li>
                     <li>vad_filter: Whether to apply a voice activity detection filter. This is an optional parameter. Default is False.</li>
                     <li>min_silence_duration_ms: The minimum duration of silence to be considered as a pause. This is an optional parameter. Default is 1000.</li>
-                    <li>response_format: The format of the response. This is an optional parameter. The options are 'text', 'json'. Default is 'text'.</li>
-                    <li>timestamp_granularities: The granularity of the timestamps. This is an optional parameter. The options are 'segment', 'word'. Default is 'segment'.</li>
+                    <li>response_format: The format of the response. This is an optional parameter. The options are 'text', 'verbose_json'. Default is 'text'.</li>
+                    <li>timestamp_granularities: The granularity of the timestamps. This is an optional parameter. The options are 'segment', 'word'. Default is 'segment'. This is a string and not an array like the OpenAI model, and the timestamps will be returned only if the response_format is set to verbose_json.</li>
                 </ul>
                 <h4>Example:</h4>
                 <ul>
-                    <li>files: audio1.wav, audio2.wav</li>
-                    <li>model_size: base</li>
+                    <li>file: audio1.wav, audio2.wav</li>
+                    <li>model: base</li>
                     <li>language: en</li>
                     <li>initial_prompt: RoBERTa, Mixtral, Claude 3, Command R+, LLama 3.</li>
                     <li>vad_filter: False</li>
@@ -71,9 +82,9 @@ def home():
                     <li>curl -X POST "http://localhost:8000/v1/transcriptions" \</li>
                     <li>-H  "accept: application/json" \</li>
                     <li>-H  "Content-Type: multipart/form-data" \</li>
-                    <li>-F "files=@audio1.wav;type=audio/wav" \</li>
-                    <li>-F "files=@audio2.wav;type=audio/wav" \</li>
-                    <li>-F "model_size=base" \</li>
+                    <li>-F "file=@audio1.wav;type=audio/wav" \</li>
+                    <li>-F "file=@audio2.wav;type=audio/wav" \</li>
+                    <li>-F "model=base" \</li>
                     <li>-F "language=en" \</li>
                     <li>-F "initial_prompt=RoBERTa, Mixtral, Claude 3, Command R+, LLama 3." \</li>
                     <li>-F "vad_filter=False" \</li>
@@ -98,8 +109,8 @@ def home():
           }
 )
 async def transcribe_audio(credentials: HTTPAuthorizationCredentials = Depends(security),
-                           files: List[UploadFile] = File(...),
-                           model_size: str = Form("base"),
+                           file: List[UploadFile] = File(...),
+                           model: str = Form("base"),
                            language: str = Form(None),
                            initial_prompt: str = Form(None),
                            vad_filter: bool = Form(False),
@@ -107,36 +118,36 @@ async def transcribe_audio(credentials: HTTPAuthorizationCredentials = Depends(s
                            response_format: str = Form("text"),
                            timestamp_granularities: str = Form("segment")):
     user = authenticate_user(credentials)
-    validate_parameters(files, language, model_size, vad_filter, min_silence_duration_ms, response_format, timestamp_granularities)
+    validate_parameters(file, language, model, vad_filter, min_silence_duration_ms, response_format, timestamp_granularities)
     word_timestamps = timestamp_granularities == "word"
-    model = WhisperModel(model_size, device=device, compute_type=compute_type)
+    m = WhisperModel(model, device=device, compute_type=compute_type)
     
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_THREADS) as executor:
         futures = []
-        for file in files:
-            future = executor.submit(asyncio.run, process_file(file, model, initial_prompt, language, word_timestamps, vad_filter, min_silence_duration_ms))
+        for f in file:
+            future = executor.submit(asyncio.run, process_file(f, m, initial_prompt, language, word_timestamps, vad_filter, min_silence_duration_ms))
             futures.append(future)
     
         transcriptions = {}
         for i, future in enumerate(concurrent.futures.as_completed(futures), start=1):
             try:
                 result = future.result()
-                if len(files) > 1:
+                if len(file) > 1:
                     if response_format == "text":
-                        transcriptions[f"File {i}"] = result["text"]
+                        transcriptions[f"File {i}"] = {"text": result["text"]}
                     else:
                         transcriptions[f"File {i}"] = result
                 else:
                     if response_format == "text":
-                        transcriptions = result["text"]
+                        transcriptions = {"text": result["text"]}
                     else:
                         transcriptions = result
             except Exception as e:
                 logger.error(f"An error occurred during transcription: {str(e)}")
                 raise HTTPException(status_code=500, detail=str(e))
     
-        logger.info(f"Transcription completed for {len(files)} files")
+        logger.info(f"Transcription completed for {len(file)} file(s).")
         return JSONResponse(content=transcriptions)
 
 @app.exception_handler(HTTPException)
