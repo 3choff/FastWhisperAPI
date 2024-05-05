@@ -1,0 +1,3 @@
+fastapi
+faster_whisper
+torch

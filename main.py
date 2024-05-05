@@ -177,5 +177,3 @@ async def validation_exception_handler(request, exc):
             }
         },
     )
-# Use the following command to run the FastAPI app:
-# fastapi run main.py
