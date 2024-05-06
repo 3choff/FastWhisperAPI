@@ -69,6 +69,8 @@ The environment variable is unnecessary if only the CPU is available.
 
 The application will begin running at `http://localhost:8000`.
 
+To authenticate API requests, set the API key to "dummy_api_key" in your environment.
+
 This API can be dockerized for deployment, and a Dockerfile is included in the repository. Please note that you may need to edit the Dockerfile based on your specific setup and CUDA version installed.
 
 Additionally, it is possible to run the API from a Google Colab environment using the NGROK service. The Jupyter Notebook for running the API in Colab is also included in the repository. [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/3choff/FastWhisperAPI/blob/main/FastWhisperAPI_notebook.ipynb)
