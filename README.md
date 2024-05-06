@@ -58,9 +58,20 @@ To run the FastAPI app, use the following command:
 ```bash
 fastapi run main.py
 ```
-The application will start running at `http://localhost:8000`.
+The API automatically detects the availability of a GPU and configures the device accordingly, either on CPU or CUDA.
 
-This API can be dockerized for deployment, but it is also possible to run the API from a Google Colab using the NGROK service. The Jupyter Notebook is included in the repository. [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/3choff/FastWhisperAPI/blob/main/FastWhisperAPI_notebook.ipynb)
+If you wish to explicitly run the application on CPU, even if CUDA cores are available, set the FORCE_CPU environment variable to "true":
+
+```bash
+FORCE_CPU=true fastapi run main.py
+```
+The environment variable is unnecessary if only the CPU is available.
+
+The application will begin running at `http://localhost:8000`.
+
+This API can be dockerized for deployment, and a Dockerfile is included in the repository. Please note that you may need to edit the Dockerfile based on your specific setup and CUDA version installed.
+
+Additionally, it is possible to run the API from a Google Colab environment using the NGROK service. The Jupyter Notebook for running the API in Colab is also included in the repository. [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/3choff/FastWhisperAPI/blob/main/FastWhisperAPI_notebook.ipynb)
 
 
 ## Parameters
@@ -72,7 +83,7 @@ This API can be dockerized for deployment, but it is also possible to run the AP
 - `vad_filter`: Whether to apply a voice activity detection filter. This is an optional parameter. Default is False.
 - `min_silence_duration_ms`: The minimum duration of silence to be considered as a pause. This is an optional parameter. Default is 1000.
 - `response_format`: The format of the response. This is an optional parameter. The options are 'text', 'verbose_json'. Default is 'text'.
-- `timestamp_granularities`: The granularity of the timestamps. This is an optional parameter. The options are 'segment', 'word'. Default is 'segment'. This is a string and not an array like the OpenAI model, and the timestamps will be returned only if the response_format is set to verbose_json.
+- `timestamp_granularities`: The granularity of the timestamps. This is an optional parameter. The options are 'segment', 'word'. Default is 'segment'. **This is a string and not an array like the OpenAI API**, and the timestamps will be returned only if the response_format is set to verbose_json.
 
 ### Example curl request
 
@@ -105,6 +116,16 @@ This project was made possible thanks to:
 - [Faster Whisper](https://github.com/SYSTRAN/faster-whisper): For providing the transcription model used in this project.
 - [FastAPI](https://github.com/tiangolo/fastapi): For the web framework used to build the API.
 - [AI Anytime](https://www.youtube.com/watch?v=NU406wZz1eU): For inspiring this project.
+
+## Support
+
+If you find this project helpful and would like to support its development, there are several ways you can contribute:
+
+- **Support**: Consider [donate](https://ko-fi.com/3choff) to support my work.
+- **Contribute**: If you're a developer, feel free to contribute to the project by submitting pull requests or opening issues.
+- **Spread the Word**: Share this project with others who might find it useful.
+
+Your support means a lot and helps keep this project going. Thank you for your contribution!
 
 ## License
 

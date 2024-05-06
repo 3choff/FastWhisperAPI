@@ -1,10 +1,15 @@
-import torch
+import os
+try:
+    import torch
+except ImportError:
+    torch = None
 from faster_whisper import WhisperModel
 from fastapi.security import HTTPBearer
-# Define the device to cpu instead of auto-detecting it, uncomment the following line and comment the next one
-# device = "cpu"
 # Determine device based on availability
-device = "cuda" if torch.cuda.is_available() else "cpu"
+if torch is not None:
+    device = "cpu" if os.getenv("FORCE_CPU", "false").lower() == "true" else ("cuda" if torch.cuda.is_available() else "cpu")
+else:
+    device = "cpu"
 # Determine the compute type based on the device
 compute_type = "float16" if device == "cuda" else "int8"
 
