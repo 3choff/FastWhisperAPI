@@ -71,9 +71,27 @@ The application will begin running at `http://localhost:8000`.
 
 To authenticate API requests, set the API key to "dummy_api_key" in your environment.
 
+## Alternative Setup and Run Methods
+
+### Docker
+
 This API can be dockerized for deployment, and a Dockerfile is included in the repository. Please note that you may need to edit the Dockerfile based on your specific setup and CUDA version installed.
 
-Additionally, it is possible to run the API from a Google Colab environment using the NGROK service. The Jupyter Notebook for running the API in Colab is also included in the repository. [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/3choff/FastWhisperAPI/blob/main/FastWhisperAPI_notebook.ipynb)
+Use the following commands to build and run the container:
+
+***Build a Docker container:***
+   ```shell
+      docker build -t fastwhisperapi .
+   ```
+***Run the container***
+   ```shell
+      docker run -p 8000:8000 fastwhisperapi
+   ```
+### Google Colab
+
+Additionally, it is possible to run the API from a Google Colab environment using the Ngrok service. The Ngrok service will generate a random public URL that you can use to replace localhost in your project. For example, if the URL assigned is https://a3bd-34-171-99-34.ngrok-free.app, the transcription endpoint will be https://a3bd-34-171-99-34.ngrok-free.app/v1/transcriptions.
+
+The Jupyter Notebook for running the API in Colab is also included in the repository. [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/3choff/FastWhisperAPI/blob/main/FastWhisperAPI_notebook.ipynb)
 
 
 ## Parameters
