@@ -27,11 +27,14 @@ def get_file_extension(filename: str) -> str:
     _, extension = os.path.splitext(filename)
     return extension[1:].lower()
 async def transcribe_temp_file(file: UploadFile, extension: str, model: WhisperModel, initial_prompt: str, language: str, word_timestamps: bool, vad_filter: bool, min_silence_duration_ms: int):
-    with tempfile.NamedTemporaryFile(suffix=extension) as temp_file:
+    temp_file = tempfile.NamedTemporaryFile(suffix=extension, delete=False)
+    try:
         temp_file.write(await file.read())
-        temp_file.flush()
+        temp_file.close()
         vad_parameters = dict(min_silence_duration_ms=min_silence_duration_ms) if vad_filter else None
         segments, info = model.transcribe(temp_file.name, initial_prompt=initial_prompt, language=language, beam_size=5, vad_filter=vad_filter, vad_parameters=vad_parameters, word_timestamps=word_timestamps)
+    finally:
+        os.unlink(temp_file.name)
     return segments, info
 
 def create_segment_data(segments: list, word_timestamps: bool):

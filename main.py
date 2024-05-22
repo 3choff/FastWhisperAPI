@@ -1,6 +1,8 @@
 
 import concurrent.futures
 import asyncio
+import os
+os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
 from faster_whisper import WhisperModel
 from fastapi import FastAPI, UploadFile, File, HTTPException, Request, Form, Depends, status
