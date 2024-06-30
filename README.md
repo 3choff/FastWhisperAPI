@@ -3,6 +3,8 @@
 FastWhisperAPI is a web service built with the FastAPI framework, specifically tailored for the accurate and efficient transcription of audio files using the Faster Whisper library.
 This project is an open-source initiative that leverages the remarkable Faster Whisper model. It is four times faster than openai/whisper while maintaining the same level of accuracy and consuming less memory, whether running on CPU or GPU. The API is built to provide compatibility with the OpenAI API standard, facilitating seamless integration into existing applications that use [OpenAI - Whisper](https://platform.openai.com/docs/api-reference/making-requests).
 
+If you find FastWhisperAPI useful, please consider leaving a star ⭐ or [donate](https://ko-fi.com/3choff).
+
 ## Features
 - FastWhisperAPI is fully compatible with the OpenAI API standard.
 - Transcribe audio files asynchronously using a ThreadPoolExecutor.
@@ -58,6 +60,13 @@ To run the FastAPI app, use the following command:
 ```bash
 fastapi run main.py
 ```
+
+If you want to specify a different port, use the --port option followed by the desired port number:
+
+```bash
+fastapi run main.py --port 5000
+```
+
 The API automatically detects the availability of a GPU and configures the device accordingly, either on CPU or CUDA.
 
 If you wish to explicitly run the application on CPU, even if CUDA cores are available, set the FORCE_CPU environment variable to "true":
@@ -67,7 +76,7 @@ FORCE_CPU=true fastapi run main.py
 ```
 The environment variable is unnecessary if only the CPU is available.
 
-The application will begin running at `http://localhost:8000`.
+The application will begin running at `http://localhost:8000` if the port was not specified, or at `http://localhost:PORT_NUMBER` if a different port was specified.
 
 To authenticate API requests, set the API key to "dummy_api_key" in your environment.
 
