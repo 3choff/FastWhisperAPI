@@ -19,6 +19,9 @@ If you find FastWhisperAPI useful, please consider leaving a star ⭐ or [donate
 - Refer to the Faster Whisper documentation for the GPU requirements [here](https://github.com/SYSTRAN/faster-whisper/blob/master/README.md).
 
 ## Installation
+You can check out this [YouTube video](https://youtu.be/xu-8hLOAI94?t=176) by [Prompt Engineering](https://www.youtube.com/@engineerprompt), which shows how to install and use the FastWhisperAPI, or follow the instructions below.
+
+[![YouTube Video](./images/thumbnail.png)](https://www.youtube.com/watch?v=xu-8hLOAI94&t=176)
 
 1. Clone the repository:
     ```bash
